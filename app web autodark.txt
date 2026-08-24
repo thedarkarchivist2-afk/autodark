@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Metadados básicos -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AutoDark</title>
+  <meta name="description" content="AutoDark – Plataforma moderna para automação e gestão com inteligência artificial." />
+  <meta name="keywords" content="autodark, app, automação, inteligência artificial, gestão" />
+  <meta name="author" content="AutoDark" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+
+  <!-- Favicon e ícones -->
+  <link rel="icon" type="image/svg+xml" href="https://media.base44.com/images/public/6a8b829cc4095a95e8bab08c/157a6dc0e_logo.png" />
+  <link rel="apple-touch-icon" href="https://media.base44.com/images/public/6a8b829cc4095a95e8bab08c/157a6dc0e_logo.png" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Pré-conexões para performance -->
+  <link rel="preconnect" href="https://media.base44.com" />
+  <link rel="preconnect" href="https://app.base44.com" />
+  <link rel="dns-prefetch" href="https://media.base44.com" />
+  <link rel="dns-prefetch" href="https://app.base44.com" />
+
+  <!-- Estilos principais -->
+  <link rel="stylesheet" href="/assets/index-BI13eY2C.css" />
+
+  <!-- Script principal (module) -->
+  <script type="module" crossorigin src="/assets/index-BbFhXZgR.js"></script>
+
+  <!-- Meta tags para PWA -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AutoDark" />
+
+  <!-- Suporte a modo escuro automático -->
+  <meta name="color-scheme" content="light dark" />
+
+  <!-- Script de rastreamento (melhorado e isolado) -->
+  <script>
+    (function () {
+      // Só rastreia se estiver no topo (evita iframes indesejados)
+      if (window.self !== window.top) return;
+
+      const APP_ID = "6a8b829cc4095a95e8bab08c";
+      let lastPath = "";
+
+      function getPageNameFromPath(path) {
+        const segments = path.split("/").filter(Boolean);
+        return segments[0] || "home";
+      }
+
+      function trackPageView() {
+        const path = window.location.pathname;
+        if (path === lastPath) return;
+        lastPath = path;
+        const pageName = getPageNameFromPath(path);
+
+        // Envia log de forma assíncrona e não bloqueante
+        fetch(`/api/app-logs/${APP_ID}/log-user-in-app/${pageName}`, {
+          method: "POST",
+          keepalive: true, // garante envio mesmo se a página fechar
+        }).catch(() => {});
+      }
+
+      // Intercepta mudanças de rota em SPAs
+      const originalPushState = history.pushState.bind(history);
+      history.pushState = function (...args) {
+        originalPushState(...args);
+        trackPageView();
+      };
+
+      const originalReplaceState = history.replaceState.bind(history);
+      history.replaceState = function (...args) {
+        originalReplaceState(...args);
+        trackPageView();
+      };
+
+      window.addEventListener("popstate", trackPageView);
+      window.addEventListener("load", trackPageView);
+      trackPageView(); // primeira visualização
+    })();
+  </script>
+
+  <!-- Badge script (carregado de forma assíncrona) -->
+  <script async src="/static/js/badge.js"
+          data-app-id="6a8b829cc4095a95e8bab08c"
+          data-platform-url="https://app.base44.com">
+  </script>
+
+  <!-- Estilo para tela de carregamento (evita flash de conteúdo vazio) -->
+  <style>
+    #root:empty::before {
+      content: "";
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #root:empty::after {
+      content: "Carregando AutoDark...";
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #334155;
+      font-size: 1.2rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      #root:empty::before {
+        background: #0f172a;
+      }
+      #root:empty::after {
+        color: #e2e8f0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Container principal da aplicação -->
+  <div id="root"></div>
+
+  <!-- Fallback para navegadores sem JavaScript -->
+  <noscript>
+    <div style="text-align: center; padding: 2rem; font-family: sans-serif;">
+      <h1>AutoDark</h1>
+      <p>Este aplicativo requer JavaScript para funcionar. Por favor, habilite o JavaScript no seu navegador.</p>
+    </div>
+  </noscript>
+
+  <!-- Registro de Service Worker (se existir) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.warn('Service Worker registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
